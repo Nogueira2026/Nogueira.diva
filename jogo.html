@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monte o Balanço - Jogo Interativo</title>
+  <style>
+    :root {
+      --bg-dark: #080c1d;
+      --card-bg: #0f172a;
+      --accent-purple: #7c3aed;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Layout Principal */
+    .game-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    @media (max-width: 850px) {
+      .game-container { grid-template-columns: 1fr; }
+    }
+
+    /* Caixa de Contas */
+    .pool-panel {
+      background: var(--card-bg);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .pool-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #38bdf8;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 0.5rem;
+    }
+
+    .items-pool {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 350px;
+    }
+
+    /* Peças / Cards Arrastáveis */
+    .draggable-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: var(--text-light);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: grab;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .draggable-card:active {
+      cursor: grabbing;
+      transform: scale(1.02);
+    }
+
+    .draggable-card .val {
+      font-size: 0.75rem;
+      color: #a7f3d0;
+    }
+
+    /* Balanço Patrimonial (Áreas de Soltura) */
+    .balance-sheet {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .balance-sheet { grid-template-columns: 1fr; }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .drop-zone {
+      background: var(--card-bg);
+      border: 2px dashed #334155;
+      border-radius: 12px;
+      padding: 1rem;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .drop-zone.drag-over {
+      background: #1e1b4b;
+      border-color: var(--accent-purple);
+    }
+
+    .zone-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .zone-total { color: var(--accent-green); }
+    .zone-ac .zone-title { color: #38bdf8; }
+    .zone-anc .zone-title { color: #60a5fa; }
+    .zone-pc .zone-title { color: #f43f5e; }
+    .zone-pnc .zone-title { color: #fb7185; }
+    .zone-pl .zone-title { color: #c084fc; }
+
+    /* Barra de Totais */
+    .totals-bar {
+      grid-column: 1 / -1;
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .total-group { display: flex; gap: 1.5rem; }
+    .total-box { font-size: 0.9rem; }
+    .total-box span { font-weight: bold; font-size: 1.1rem; }
+
+    .status-indicator {
+      font-weight: 800;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      background: #334155;
+      color: var(--text-muted);
+    }
+
+    .status-balanced {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
+      border: 1px solid var(--accent-green);
+    }
+
+    .status-unbalanced {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
+      border: 1px solid var(--accent-red);
+    }
+
+    /* Botões */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      background: var(--accent-purple);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background: #6d28d9;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #334155;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover { background: #475569; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🏗️ Monte o Balanço Patrimonial</h1>
+    <p class="subtitle">Arraste as contas para as caixas corretas até a equação fechar: <strong>Ativo = Passivo + PL</strong></p>
+  </header>
+
+  <div class="game-container">
+    <!-- Peças de Contas -->
+    <div class="pool-panel">
+      <div class="pool-title">📦 Contas Disponíveis</div>
+      <div class="items-pool" id="pool" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    </div>
+
+    <!-- Estrutura do Balanço -->
+    <div class="balance-sheet">
+      <!-- Coluna Ativos -->
+      <div class="column">
+        <div class="drop-zone zone-ac" id="zone-AC" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <div class="zone-title">
+            <span>ATIVO CIRCULANTE</span>
+            <span class="zone-total" id="total-AC">R$ 0</span>
+          </div>
+        </div>
+
+        <div class="drop-zone zone-anc" id="zone-ANC" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <div class="zone-title">
+            <span>ATIVO NÃO CIRCULANTE</span>
+            <span class="zone-total" id="total-ANC">R$ 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna Passivos / PL -->
+      <div class="column">
+        <div class="drop-zone zone-pc" id="zone-PC" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <div class="zone-title">
+            <span>PASSIVO CIRCULANTE</span>
+            <span class="zone-total" id="total-PC">R$ 0</span>
+          </div>
+        </div>
+
+        <div class="drop-zone zone-pnc" id="zone-PNC" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <div class="zone-title">
+            <span>PASSIVO NÃO CIRCULANTE</span>
+            <span class="zone-total" id="total-PNC">R$ 0</span>
+          </div>
+        </div>
+
+        <div class="drop-zone zone-pl" id="zone-PL" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <div class="zone-title">
+            <span>PATRIMÔNIO LÍQUIDO</span>
+            <span class="zone-total" id="total-PL">R$ 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placar e Balanço de Equilíbrio -->
+      <div class="totals-bar">
+        <div class="total-group">
+          <div class="total-box">Total Ativo: <span id="total-ativo" style="color: #38bdf8;">R$ 0</span></div>
+          <div class="total-box">Total Passivo + PL: <span id="total-passivo-pl" style="color: #c084fc;">R$ 0</span></div>
+        </div>
+        <div class="status-indicator status-unbalanced" id="status-tag">DESBALANCEADO</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="validateBoard()">CONFERIR RESPOSTAS</button>
+    <button class="btn btn-secondary" onclick="resetGame()">REINICIAR</button>
+  </div>
+
+  <script>
+    const itemsData = [
+      { id: "item-1", name: "Caixa e Bancos", val: 10000, correctZone: "zone-AC" },
+      { id: "item-2", name: "Estoque", val: 5000, correctZone: "zone-AC" },
+      { id: "item-3", name: "Veículos", val: 30000, correctZone: "zone-ANC" },
+      { id: "item-4", name: "Fornecedores", val: 8000, correctZone: "zone-PC" },
+      { id: "item-5", name: "Salários a Pagar", val: 2000, correctZone: "zone-PC" },
+      { id: "item-6", name: "Financiamento (LP)", val: 15000, correctZone: "zone-PNC" },
+      { id: "item-7", name: "Capital Social", val: 20000, correctZone: "zone-PL" }
+    ];
+
+    function initGame() {
+      const pool = document.getElementById("pool");
+      pool.innerHTML = "";
+      
+      const shuffled = [...itemsData].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "draggable-card";
+        card.id = item.id;
+        card.draggable = true;
+        card.setAttribute("ondragstart", "drag(event)");
+        card.dataset.val = item.val;
+        card.dataset.correct = item.correctZone;
+
+        card.innerHTML = `
+          <span>${item.name}</span>
+          <span class="val">R$ ${item.val.toLocaleString("pt-BR")}</span>
+        `;
+        pool.appendChild(card);
+      });
+
+      calculateTotals();
+    }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+      const zone = ev.target.closest(".drop-zone, .items-pool");
+      if (zone) zone.classList.add("drag-over");
+    }
+
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+      ev.preventDefault();
+      document.querySelectorAll(".drag-over").forEach(el => el.classList.remove("drag-over"));
+      
+      const data = ev.dataTransfer.getData("text");
+      const card = document.getElementById(data);
+      const zone = ev.target.closest(".drop-zone, .items-pool");
+
+      if (zone && card) {
+        zone.appendChild(card);
+        calculateTotals();
+      }
+    }
+
+    function calculateTotals() {
+      const zones = ["AC", "ANC", "PC", "PNC", "PL"];
+      let totals = { AC: 0, ANC: 0, PC: 0, PNC: 0, PL: 0 };
+
+      zones.forEach(z => {
+        const zoneEl = document.getElementById(`zone-${z}`);
+        const cards = zoneEl.querySelectorAll(".draggable-card");
+        cards.forEach(c => {
+          totals[z] += parseInt(c.dataset.val);
+        });
+        document.getElementById(`total-${z}`).innerText = `R$ ${totals[z].toLocaleString("pt-BR")}`;
+      });
+
+      const totalAtivo = totals.AC + totals.ANC;
+      const totalPassivoPL = totals.PC + totals.PNC + totals.PL;
+
+      document.getElementById("total-ativo").innerText = `R$ ${totalAtivo.toLocaleString("pt-BR")}`;
+      document.getElementById("total-passivo-pl").innerText = `R$ ${totalPassivoPL.toLocaleString("pt-BR")}`;
+
+      const statusTag = document.getElementById("status-tag");
+      if (totalAtivo > 0 && totalAtivo === totalPassivoPL) {
+        statusTag.innerText = "EQUILIBRADO! ⚖️";
+        statusTag.className = "status-indicator status-balanced";
+      } else {
+        statusTag.innerText = "DESBALANCEADO ⚠️";
+        statusTag.className = "status-indicator status-unbalanced";
+      }
+    }
+
+    function validateBoard() {
+      const pool = document.getElementById("pool");
+      if (pool.children.length > 0) {
+        alert("Ainda faltam contas na caixa! Arraste todas para o balanço.");
+        return;
+      }
+
+      let errors = 0;
+      document.querySelectorAll(".draggable-card").forEach(card => {
+        const currentZone = card.parentElement.id;
+        const correctZone = card.dataset.correct;
+
+        if (currentZone === correctZone) {
+          card.style.borderColor = "var(--accent-green)";
+        } else {
+          card.style.borderColor = "var(--accent-red)";
+          errors++;
+        }
+      });
+
+      const totalAtivo = parseInt(document.getElementById("total-ativo").innerText.replace(/\D/g, ""));
+      const totalPassivoPL = parseInt(document.getElementById("total-passivo-pl").innerText.replace(/\D/g, ""));
+
+      if (errors === 0 && totalAtivo === totalPassivoPL && totalAtivo > 0) {
+        alert("🎉 PARABÉNS! Você posicionou tudo corretamente e o Balanço Patrimonial fechou em perfeito equilíbrio!");
+      } else {
+        alert(`❌ Existem ${errors} conta(s) no lugar errado. Verifique os blocos com borda vermelha!`);
+      }
+    }
+
+    function resetGame() {
+      document.querySelectorAll(".drop-zone").forEach(z => {
+        const cards = z.querySelectorAll(".draggable-card");
+        cards.forEach(c => c.style.borderColor = "#334155");
+      });
+      initGame();
+    }
+
+    initGame();
+  </script>
+</body>
+</html>

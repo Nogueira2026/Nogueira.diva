@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre a Criadora | Contabilidade Educativa</title>
+
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(15, 23, 42, 0.78);
+      --accent-purple: #8b5cf6;
+      --accent-blue: #3b82f6;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(139, 92, 246, 0.13), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.10), transparent 35%),
+        var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    header {
+      width: 100%;
+      background: rgba(9, 13, 22, 0.82);
+      backdrop-filter: blur(12px);
+      padding: 1rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      font-size: 1.25rem;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text-light);
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      color: white !important;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4.5rem 1rem 2rem;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 0.3rem 0.85rem;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: var(--accent-purple);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 0.7rem;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .profile {
+      margin: 1rem 0 3rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2.5rem;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .profile-top {
+      text-align: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      border: 3px solid rgba(139, 92, 246, 0.55);
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.25);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .profile-top h2 {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .profile-top p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .info-card {
+      text-align: center;
+      padding: 1.2rem 0.8rem;
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.025);
+      border-radius: 12px;
+    }
+
+    .info-card .icon {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-card strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-card span {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .story {
+      padding-top: 0.5rem;
+    }
+
+    .story h2 {
+      font-size: 1.35rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .story p {
+      color: var(--text-muted);
+      line-height: 1.75;
+      font-size: 0.95rem;
+    }
+
+    .reason {
+      margin-top: 1.5rem;
+      padding: 1.4rem;
+      border-radius: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.22);
+      background: linear-gradient(
+        145deg,
+        rgba(139, 92, 246, 0.09),
+        rgba(59, 130, 246, 0.05)
+      );
+    }
+
+    .reason h3 {
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+    }
+
+    .reason p {
+      font-size: 0.9rem;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .back a {
+      display: inline-block;
+      text-decoration: none;
+      color: white;
+      background: var(--accent-purple);
+      padding: 0.8rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .back a:hover {
+      opacity: 0.9;
+    }
+
+    footer {
+      margin-top: 4rem;
+      border-top: 1px solid var(--border-color);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 0.9rem 5%;
+      }
+
+      nav a:not(.back-btn) {
+        display: none;
+      }
+
+      .back-btn {
+        font-size: 0.8rem;
+        padding: 0.45rem 0.8rem;
+      }
+
+      .profile {
+        padding: 1.5rem;
+      }
+
+      .info {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 450px) {
+      .brand-title {
+        font-size: 0.9rem;
+      }
+
+      .hero {
+        padding-top: 3.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="brand-icon">📊</span>
+      <div class="brand-title">CONTABILIDADE EDUCATIVA</div>
+    </div>
+
+    <nav>
+      <a href="index.html" class="back-btn">Início</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <span class="hero-badge">SOBRE A CRIADORA</span>
+      <h1>Conheça <span>Anna Clara</span></h1>
+      <p>A pessoa por trás da criação da Contabilidade Educativa.</p>
+    </section>
+
+    <div class="container">
+      <section class="profile">
+
+        <div class="profile-top">
+          <!-- Coloque a foto real da Anna Clara no lugar de "foto-anna-clara.jpg" -->
+          <img class="avatar" src="foto-anna-clara.jpeg" alt="Foto de Anna Clara Nogueira Santos">
+          <h2>Anna Clara Nogueira Santos</h2>
+          <p>Estudante de Administração e criadora da plataforma</p>
+        </div>
+
+        <div class="info">
+          <div class="info-card">
+            <div class="icon">🎂</div>
+            <strong>Idade</strong>
+            <span>17 anos</span>
+          </div>
+
+          <div class="info-card">
+            <div class="icon">🏫</div>
+            <strong>Instituição</strong>
+            <span>ETEC</span>
+          </div>
+
+          <div class="info-card">
+            <div class="icon">📚</div>
+            <strong>Formação</strong>
+            <span>3º ano de Administração</span>
+          </div>
+        </div>
+
+        <div class="story">
+          <h2>👋 Sobre a criadora</h2>
+
+          <p>
+            Anna Clara Nogueira Santos é estudante da ETEC e atualmente está
+            no 3º ano do curso de Administração. Durante sua formação, teve
+            contato com diferentes áreas da administração e percebeu como a
+            contabilidade é importante para entender o funcionamento de uma
+            empresa.
+          </p>
+
+          <br>
+
+          <p>
+            A ideia de criar este site surgiu como uma forma de transformar
+            o aprendizado em algo mais simples e interessante. Em vez de
+            depender apenas de textos e anotações, Anna Clara decidiu reunir
+            conceitos, exercícios e ferramentas interativas em um único
+            lugar.
+          </p>
+
+          <div class="reason">
+            <h3>💡 Por que ela criou o site?</h3>
+            <p>
+              A principal inspiração foi criar uma ferramenta que ajudasse
+              outros estudantes a estudar contabilidade de uma maneira mais
+              leve e prática. A ideia é que, ao invés de apenas decorar
+              conceitos, o aluno consiga visualizar, testar seus conhecimentos
+              e aprender no próprio ritmo.
+            </p>
+          </div>
+        </div>
+
+        <div class="back">
+          <a href="index.html">← Voltar para a página principal</a>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 Contabilidade Educativa. Todos os direitos reservados.</p>
+  </footer>
+
+</body>
+</html>
