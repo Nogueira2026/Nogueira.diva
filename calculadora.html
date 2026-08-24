@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Contábil - Balanço Patrimonial</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #004d80; }
+        .section-title { background: #004d80; color: white; padding: 10px; margin-top: 20px; border-radius: 4px; font-size: 1.1em; }
+        .input-group { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; padding: 5px 0; border-bottom: 1px solid #eee; }
+        .input-group label { flex: 2; font-weight: bold; }
+        .input-group input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; text-align: right; }
+        .result-box { background: #e6f2ff; padding: 15px; margin-top: 20px; border-radius: 4px; border-left: 5px solid #004d80; }
+        .alert-ok { color: green; font-weight: bold; }
+        .alert-error { color: red; font-weight: bold; }
+        button { display: block; width: 100%; background: #004d80; color: white; border: none; padding: 12px; font-size: 1em; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        button:hover { background: #003355; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculadora de Balanço Patrimonial</h1>
+    <p>Insira os saldos das contas para calcular automaticamente os totais e índices financeiros:</p>
+
+    <div class="section-title">ATIVO CIRCULANTE</div>
+    <div class="input-group"><label>Caixa / Bancos:</label><input type="number" id="ac_caixa" value="0" oninput="calcular()"></div>
+    <div class="input-group"><label>Clientes:</label><input type="number" id="ac_clientes" value="0" oninput="calcular()"></div>
+    <div class="input-group"><label>Estoques:</label><input type="number" id="ac_estoques" value="0" oninput="calcular()"></div>
+
+    <div class="section-title">ATIVO NÃO CIRCULANTE</div>
+    <div class="input-group"><label>Realizável a Longo Prazo:</label><input type="number" id="anc_lp" value="0" oninput="calcular()"></div>
+    <div class="input-group"><label>Imobilizado:</label><input type="number" id="anc_imobilizado" value="0" oninput="calcular()"></div>
+
+    <div class="section-title">PASSIVO CIRCULANTE</div>
+    <div class="input-group"><label>Fornecedores:</label><input type="number" id="pc_fornecedores" value="0" oninput="calcular()"></div>
+    <div class="input-group"><label>Obrigações Fiscais/Trabalhistas:</label><input type="number" id="pc_obrigacoes" value="0" oninput="calcular()"></div>
+
+    <div class="section-title">PASSIVO NÃO CIRCULANTE</div>
+    <div class="input-group"><label>Empréstimos de Longo Prazo:</label><input type="number" id="pnc_emprestimos" value="0" oninput="calcular()"></div>
+
+    <div class="section-title">PATRIMÔNIO LÍQUIDO</div>
+    <div class="input-group"><label>Capital Social:</label><input type="number" id="pl_capital" value="0" oninput="calcular()"></div>
+    <div class="input-group"><label>Lucros Acumulados:</label><input type="number" id="pl_lucros" value="0" oninput="calcular()"></div>
+
+    <div class="result-box">
+        <h3>Resultados e Indicadores:</h3>
+        <p><strong>Total do Ativo:</strong> R$ <span id="res_ativo">0,00</span></p>
+        <p><strong>Total do Passivo + PL:</strong> R$ <span id="res_passivo_pl">0,00</span></p>
+        <p><strong>Status do Balanço:</strong> <span id="res_status" class="alert-ok">Aguardando dados...</span></p>
+        <hr>
+        <p><strong>Liquidez Corrente:</strong> <span id="res_liq_corrente">0,00</span></p>
+        <p><strong>Liquidez Seca:</strong> <span id="res_liq_seca">0,00</span></p>
+        <p><strong>Endividamento Geral:</strong> <span id="res_endividamento">0,00%</span></p>
+    </div>
+
+    <button onclick="calcular()">Recalcular</button>
+</div>
+
+<script>
+function calcular() {
+    // Leitura dos Ativos
+    let ac = Number(document.getElementById('ac_caixa').value) + 
+             Number(document.getElementById('ac_clientes').value) + 
+             Number(document.getElementById('ac_estoques').value);
+             
+    let anc = Number(document.getElementById('anc_lp').value) + 
+              Number(document.getElementById('anc_imobilizado').value);
+              
+    let totalAtivo = ac + anc;
+
+    // Leitura dos Passivos e PL
+    let pc = Number(document.getElementById('pc_fornecedores').value) + 
+             Number(document.getElementById('pc_obrigacoes').value);
+             
+    let pnc = Number(document.getElementById('pnc_emprestimos').value);
+    
+    let pl = Number(document.getElementById('pl_capital').value) + 
+             Number(document.getElementById('pl_lucros').value);
+             
+    let totalPassivoPL = pc + pnc + pl;
+
+    // Índices
+    let liqCorrente = pc > 0 ? (ac / pc).toFixed(2) : "0,00";
+    let liqSeca = pc > 0 ? ((ac - Number(document.getElementById('ac_estoques').value)) / pc).toFixed(2) : "0,00";
+    let endividamento = totalAtivo > 0 ? (((pc + pnc) / totalAtivo) * 100).toFixed(2) + "%" : "0,00%";
+
+    // Exibição na Tela
+    document.getElementById('res_ativo').innerText = totalAtivo.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+    document.getElementById('res_passivo_pl').innerText = totalPassivoPL.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+
+    let statusEl = document.getElementById('res_status');
+    if (totalAtivo === totalPassivoPL && totalAtivo > 0) {
+        statusEl.innerText = "Balanço Fechado Corretamente!";
+        statusEl.className = "alert-ok";
+    } else if (totalAtivo === 0 && totalPassivoPL === 0) {
+        statusEl.innerText = "Insira os valores nas contas.";
+        statusEl.className = "";
+    } else {
+        statusEl.innerText = "Atenção: O Balanço está desencontrado!";
+        statusEl.className = "alert-error";
+    }
+
+    document.getElementById('res_liq_corrente').innerText = liqCorrente;
+    document.getElementById('res_liq_seca').innerText = liqSeca;
+    document.getElementById('res_endividamento').innerText = endividamento;
+}
+</script>
+
+</body>
+</html>
