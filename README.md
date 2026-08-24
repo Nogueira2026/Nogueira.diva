@@ -1,2 +1,0 @@
-# Nogueira.diva
-Contabilidade
